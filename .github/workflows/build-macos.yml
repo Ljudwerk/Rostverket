@@ -1,0 +1,64 @@
+# Bygg, testa och validera Röstverket på macOS. Kopierad från KrangBox och anpassad.
+# krang-libs hämtas bredvid (repot KrangLibs); är det privat behövs en token i KRANG_LIBS_TOKEN.
+name: Bygg macOS
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: rostverket
+
+      - uses: actions/checkout@v4
+        with:
+          repository: mikkeschiren/KrangLibs
+          path: krang-libs
+          token: ${{ secrets.KRANG_LIBS_TOKEN || github.token }}
+
+      - name: Cache för beroenden
+        uses: actions/cache@v4
+        with:
+          path: rostverket/build/_deps
+          key: deps-${{ hashFiles('rostverket/CMakeLists.txt') }}
+
+      - name: Konfigurera
+        working-directory: rostverket
+        run: cmake -B build -G Xcode
+
+      - name: Bygg (universal, Release)
+        working-directory: rostverket
+        run: cmake --build build --config Release --target Rostverket_All RVRender -- -quiet
+
+      - name: Testfallen
+        working-directory: rostverket
+        run: ./build/RVRender_artefacts/Release/RVRender --test
+
+      - name: Hämta pluginval
+        run: |
+          curl -sSL -o pluginval.zip https://github.com/Tracktion/pluginval/releases/latest/download/pluginval_macOS.zip
+          unzip -q pluginval.zip
+
+      - name: Validera VST3 och AU
+        run: |
+          mkdir -p ~/Library/Audio/Plug-Ins/Components
+          cp -R rostverket/build/Rostverket_artefacts/Release/AU/Rostverket.component ~/Library/Audio/Plug-Ins/Components/
+          killall -9 AudioComponentRegistrar || true
+          ./pluginval.app/Contents/MacOS/pluginval --strictness-level 5 --skip-gui-tests --validate-in-process \
+            --validate rostverket/build/Rostverket_artefacts/Release/VST3/Rostverket.vst3
+          ./pluginval.app/Contents/MacOS/pluginval --strictness-level 5 --skip-gui-tests --validate-in-process \
+            --validate ~/Library/Audio/Plug-Ins/Components/Rostverket.component
+
+      - name: Spara byggen
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rostverket-macOS
+          path: |
+            rostverket/build/Rostverket_artefacts/Release/VST3
+            rostverket/build/Rostverket_artefacts/Release/AU
+            rostverket/build/Rostverket_artefacts/Release/CLAP
+            rostverket/build/Rostverket_artefacts/Release/Standalone
