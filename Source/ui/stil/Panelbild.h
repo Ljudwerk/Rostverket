@@ -13,6 +13,7 @@
 #include <array>
 #include <vector>
 #include "Radiohuset.h"
+#include <krang/ui/Versaler.h>
 
 namespace rv::stil::panel
 {
@@ -155,7 +156,7 @@ inline void bakgrund (juce::Graphics& g, const Tillstand& t, float skala)
         g.drawLine (r.getX() + 5.0f, r.getY() + 1.0f, r.getRight() - 5.0f, r.getY() + 1.0f, 0.8f);
         const auto h = geo::modulHuvud (i);
         plakett (g, { h.getX() + 6.0f, h.getY() + 6.0f, juce::jmin (190.0f, h.getWidth() - 110.0f), 20.0f },
-                 juce::String (m.nr) + "  " + m.namn.toUpperCase(), 8.0f);
+                 juce::String (m.nr) + "  " + krang::ui::versaler (m.namn), 8.0f);
         // Radernas rubriker och skiljelinjer
         const auto inn = geo::modulInnehall (i);
         const int n = (int) m.rader.size();
@@ -171,7 +172,7 @@ inline void bakgrund (juce::Graphics& g, const Tillstand& t, float skala)
             }
             if (m.rader[(size_t) ri].rubrik.isNotEmpty())
             {
-                const auto rub = m.rader[(size_t) ri].rubrik.toUpperCase();
+                const auto rub = krang::ui::versaler (m.rader[(size_t) ri].rubrik);
                 const float b = ls::bredd (rub, text (5.5f)) + 10.0f;
                 auto ruta = juce::Rectangle<float> (rr.getX() + 4.0f, rr.getY() + 2.0f, b, 9.0f);
                 g.setColour (farg::kittModul);
@@ -223,7 +224,7 @@ void forVarjeDel (const Tillstand& t, F&& f)
 
 inline void del (juce::Graphics& g, const Del& d, juce::Rectangle<float> cell, float r)
 {
-    const auto namn = d.namn.toUpperCase();
+    const auto namn = krang::ui::versaler (d.namn);
     switch (d.typ)
     {
         case Del::Typ::ratt:
@@ -294,7 +295,7 @@ inline void reglage (juce::Graphics& g, const Tillstand& t)
     {
         const auto& d = t.utgang[(size_t) i];
         const auto c = geo::utgang[(size_t) i];
-        skriv (g, d.namn.toUpperCase(), { c.x - 70.0f, c.y - 4.0f, 46.0f, 8.0f }, 5.5f, farg::tryck, juce::Justification::centredRight);
+        skriv (g, krang::ui::versaler (d.namn), { c.x - 70.0f, c.y - 4.0f, 46.0f, 8.0f }, 5.5f, farg::tryck, juce::Justification::centredRight);
         ratt (g, c, 13.0f, d.varde, true);
         skriv (g, d.text, { c.x + 24.0f, c.y - 4.0f, 48.0f, 8.0f }, 5.2f, farg::varde, juce::Justification::centredLeft);
     }

@@ -11,6 +11,7 @@
 #include <krang/stil/Linjeskrift.h>
 #include <krang/stil/Textur.h>
 #include "Palett.h"
+#include <krang/ui/Versaler.h>
 
 namespace rv::stil
 {
@@ -291,7 +292,7 @@ inline void valjare (juce::Graphics& g, juce::Point<float> c, float r, const juc
         g.setColour (vald ? farg::tryck : farg::tryckMatt);
         g.drawLine (c.x + std::sin (a) * r * 1.15f, c.y - std::cos (a) * r * 1.15f,
                     c.x + std::sin (a) * r * 1.38f, c.y - std::cos (a) * r * 1.38f, vald ? 1.3f : 0.8f);
-        const auto t = lagen[i].toUpperCase();
+        const auto t = krang::ui::versaler (lagen[i]);
         const float tb = ls::bredd (t, text (texthojd));
         const float rt = r * 1.55f + tb * 0.5f * std::abs (std::sin (a)) + texthojd * 0.6f;
         auto ruta = juce::Rectangle<float> (tb + 2.0f, texthojd + 2.0f).withCentre ({ c.x + std::sin (a) * rt, c.y - std::cos (a) * rt });
@@ -582,8 +583,8 @@ inline void programfonster (juce::Graphics& g, juce::Rectangle<float> r, const j
     g.setColour (farg::glasMorkt);
     g.fillRoundedRectangle (r, 4.0f);
     skrivGlod (g, nr, { r.getX() + 8.0f, r.getY(), 26.0f, r.getHeight() }, 10.0f, farg::neon, juce::Justification::centredLeft);
-    skrivGlod (g, namn.toUpperCase(), { r.getX() + 40.0f, r.getY() + 4.0f, r.getWidth() - 48.0f, r.getHeight() * 0.55f }, 8.0f, farg::neonGlod, juce::Justification::centredLeft);
-    skriv (g, kategori.toUpperCase(), { r.getX() + 40.0f, r.getBottom() - r.getHeight() * 0.42f, r.getWidth() - 48.0f, r.getHeight() * 0.35f }, 5.5f, farg::neon.withAlpha (0.6f), juce::Justification::centredLeft);
+    skrivGlod (g, krang::ui::versaler (namn), { r.getX() + 40.0f, r.getY() + 4.0f, r.getWidth() - 48.0f, r.getHeight() * 0.55f }, 8.0f, farg::neonGlod, juce::Justification::centredLeft);
+    skriv (g, krang::ui::versaler (kategori), { r.getX() + 40.0f, r.getBottom() - r.getHeight() * 0.42f, r.getWidth() - 48.0f, r.getHeight() * 0.35f }, 5.5f, farg::neon.withAlpha (0.6f), juce::Justification::centredLeft);
     glas (g, r, 4.0f);
     kromram (g, r, 4.0f, 2.5f);
 }

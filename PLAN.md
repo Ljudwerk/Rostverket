@@ -422,6 +422,8 @@ Regler:
   - *Programfönstret visar mikrofonen och inspelningstiden.*
   - *Appen är byggd på Linux men inte provkörd med ljudkort; det görs på Macen.*
 - *Avvikelse: appens mikrofonbrytare går via två funktioner i processorn (`RostverketProcessor::app`), som `App.cpp` sätter. Panelen kan då inte inkludera JUCE:s fönsterklasser, som inte finns i plugin och verktyg.*
+- *Rättning (6 november 2026): appen kraschade när den startades på Macen, eftersom den läser ljudkortets ingång utan att ha frågat om mikrofonen (`NSMicrophoneUsageDescription` saknades). CMakeLists.txt har nu `MICROPHONE_PERMISSION_ENABLED` med en text på svenska.*
+- *Rättning (6 november 2026): samma fel som i Montagets app – `App.cpp` och `JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP` låg bara på `Rostverket_Standalone`. Nu ligger de på det delade målet, som i Pianot. Mikrofontillståndet är kvar, eftersom Röstverket behöver rösten.*
 - *Manualen: `docs/Manual.md` och `docs/Rostverket_i_Reaper.md`.*
   - *Manualen har snabbstart, reglagen, varje modul med bild och tabell, Omvandlingen, utgången, MIDI och sidokedjan, appen, programmen, recept och felsökning.*
   - *Reaper-guiden har insert, MIDI till Orgeln, sidokedjan, automation, testlåten och rendering.*

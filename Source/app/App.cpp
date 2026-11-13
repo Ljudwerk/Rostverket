@@ -3,6 +3,10 @@
 // ingången", som sparas mellan gångerna); panelens MENY slår på den via funktionerna nedan.
 //
 // Copyright (C) 2026 Röstverket-teamet. Licens: AGPLv3, se LICENSE.
+#include <juce_audio_plugin_client/juce_audio_plugin_client.h>
+
+#if JucePlugin_Build_Standalone && JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP
+
 #include <krang/app/Fristaende.h>
 #include "../PluginProcessor.h"
 #include "../ui/stil/Palett.h"
@@ -20,3 +24,5 @@ juce::JUCEApplicationBase* juce_CreateApplication()
     };
     return new krang::app::FristaendeApp<RostverketProcessor> (juce::String::fromUTF8 ("Röstverket"), rv::stil::farg::kitt);
 }
+
+#endif

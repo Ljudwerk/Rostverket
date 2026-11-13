@@ -1,3 +1,5 @@
+<img src="docs/ljudwerk.png" alt="Ljudwerk" width="240">
+
 # Röstverket
 
 *Modell RV-83. Sändarbordet i radiohuset* – en effekt som gör en röst till vokoder, robot, kör eller paroll.

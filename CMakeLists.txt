@@ -75,6 +75,9 @@ juce_add_plugin(Rostverket
     NEEDS_MIDI_OUTPUT           FALSE
     IS_MIDI_EFFECT              FALSE
     EDITOR_WANTS_KEYBOARD_FOCUS FALSE
+    # Appen läser ljudkortets ingång: utan texten stänger macOS appen när den ber om mikrofonen.
+    MICROPHONE_PERMISSION_ENABLED TRUE
+    MICROPHONE_PERMISSION_TEXT  "Röstverket behöver mikrofonen för att behandla din röst i appen."
     COPY_PLUGIN_AFTER_BUILD     FALSE
     VST3_CATEGORIES             Fx Modulation
     AU_MAIN_TYPE                kAudioUnitType_MusicEffect   # effekt med MIDI in (Orgeln och Strupen spelas från MIDI)
@@ -87,15 +90,15 @@ clap_juce_extensions_plugin(TARGET Rostverket
 
 add_dependencies(Rostverket_All Rostverket_CLAP)
 
-# Appen: eget fönster (krang/app/Fristaende.h) i stället för JUCE:s standardfönster.
-target_sources(Rostverket_Standalone PRIVATE Source/app/App.cpp)
-target_compile_definitions(Rostverket_Standalone PRIVATE JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP=1)
 
 set(RV_SOURCES
     Source/PluginProcessor.cpp
     Source/PluginEditor.cpp)
 
-target_sources(Rostverket PRIVATE ${RV_SOURCES})
+# Appen har ett eget fönster (Source/app/App.cpp, krang/app/Fristaende.h). Filen byggs in i den delade koden
+# och definitionen gäller hela pluginet, som i Pianot – annars får appen två olika versioner av JUCE:s
+# fristående kod, och minnet förstörs när fönstret öppnas.
+target_sources(Rostverket PRIVATE ${RV_SOURCES} Source/app/App.cpp)
 target_include_directories(Rostverket PRIVATE Source)
 
 set(RV_DEFINITIONS
@@ -104,7 +107,7 @@ set(RV_DEFINITIONS
     JUCE_VST3_CAN_REPLACE_VST2=0
     JUCE_DISPLAY_SPLASH_SCREEN=0)   # Tillåtet under AGPLv3 / JUCE:s fria licens
 
-target_compile_definitions(Rostverket PUBLIC ${RV_DEFINITIONS})
+target_compile_definitions(Rostverket PUBLIC ${RV_DEFINITIONS} JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP=1)
 
 target_link_libraries(Rostverket
     PRIVATE
